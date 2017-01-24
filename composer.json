@@ -1,0 +1,16 @@
+{
+    "name": "moodle-ufsc/blocks-exam_actions",
+    "description": "Bloco de ações do moodle provas",
+    "license": "GPLv3",
+    "type": "moodle-block",
+    "require": {
+      "composer/installers": "~1.0"
+    },
+    "extra": {
+      "installer-name": "exam_actions"
+    }
+}
+
+
+
+

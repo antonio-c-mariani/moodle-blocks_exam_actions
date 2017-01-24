@@ -1,0 +1,91 @@
+.block_exam_actions .computer_released {color: DarkGreen;}
+
+.exam_box {border: 1px solid; border-color: LightGray; border-radius: 5px; padding: 15px;}
+
+.exam_list li {list-style: none;}
+
+.exam_checkbox {margin-left: 30px; margin-top: 5px; margin-bottom: 5px;}
+
+.exam_box .kept {color: Gray;}
+.exam_box .enrolled {color: DarkGreen;}
+.exam_box .unenrolled {color: Orange;}
+
+.exam_message {color: Green; margin-top: 10px;}
+.exam_warning {color: Blue; margin-top: 10px;}
+.exam_error {color: Red; margin-top: 10px;}
+
+/* CSS Tree menu styles */
+
+.release_courses .exam_pix {
+    padding-right: 5px;
+}
+
+.release_courses ol.tree {
+    padding: 0 0 0 30px;
+    width: 90%;
+}
+
+.release_courses li {
+    position: relative;
+    margin-left: -15px;
+    list-style: none;
+}
+
+.release_courses li.course {
+    margin-left: -1px !important;
+}
+
+.release_courses li.course a {
+    padding-left: 5px;
+    text-decoration: none;
+    display: inline;
+}
+
+.release_courses .identifier {
+    color: #000;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.release_courses li input.exam_category_tree {
+    position: absolute;
+    left: 0;
+    margin-left: 0;
+    opacity: 0;
+    z-index: 2;
+    cursor: pointer;
+    height: 1em;
+    width: 1em;
+    top: 0;
+}
+
+.release_courses li input.exam_category_tree + ol {
+    margin: -0.938em 0 0 -44px; /* 15px */
+    height: 1em;
+}
+
+.release_courses li input.exam_category_tree + ol > li {
+    display: none;
+    margin-left: -14px !important;
+    padding-left: 1px;
+}
+
+.release_courses li label {
+    cursor: pointer;
+    display: block;
+}
+
+.release_courses li input.exam_category_tree:checked + ol {
+    margin: -1.25em 0 0 -44px; /* 20px */
+    padding: 1.563em 0 0 80px;
+    height: auto;
+}
+
+.release_courses li input.exam_category_tree:checked + ol > li {
+    display: block;
+    margin: 0 0 0.125em;  /* 2px */
+}
+
+.release_courses li input.exam_category_tree:checked + ol > li:last-child {
+    margin: 0 0 0.063em; /* 1px */
+}

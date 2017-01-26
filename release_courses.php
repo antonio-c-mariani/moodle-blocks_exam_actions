@@ -51,7 +51,7 @@ if ($confirm && confirm_sesskey()) {
     if (empty($shortnames)) {
         print_error('no_selected_courses', 'block_exam_actions', $baseurl);
     } else {
-        $moodles = \local_exam_authorization\authorization::moodles();
+        $moodles = \local_exam_authorization\authorization::get_moodles();
         $remote_courses = block_exam_actions_remote_courses();
         foreach ($shortnames as $encodedshortname => $encodedidentifier) {
             $shortname = urldecode($encodedshortname);
@@ -90,7 +90,7 @@ if ($add) {
     } else {
         echo $OUTPUT->heading(get_string('release_courses', 'block_exam_actions'), 3);
 
-        $moodles = \local_exam_authorization\authorization::moodles();
+        $moodles = \local_exam_authorization\authorization::get_moodles();
         $remote_courses = block_exam_actions_remote_courses();
 
         $text = html_writer::start_tag('form', array('method' => 'post', 'action' => 'release_courses.php'));

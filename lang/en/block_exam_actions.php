@@ -37,7 +37,7 @@ $string['exam_actions:myaddinstance'] = 'Adiciona um novo bloco exam_actions à 
 $string['exam_actions:supervise_exam'] = 'Gerar chave de acesso';
 $string['exam_actions:monitor_exam'] = 'Visualizar relatórios de acompanhamento';
 
-$string['title'] = 'Moodle Provas';
+$string['title'] = 'Ações sobre provas';
 $string['no_permission'] = 'Você não tem permissão para realizar esta operação.';
 $string['no_remote_course_found'] = 'Não foi localizado curso equivamente a: \'{$a->shortname}\' em: \'{$a->moodle}\'';
 

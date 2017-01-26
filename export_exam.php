@@ -44,7 +44,7 @@ if (optional_param('cancel', false, PARAM_TEXT)) {
 echo $OUTPUT->header();
 $activities = get_array_of_activities($course->id);
 
-list($identifier, $shortname) = explode('_', $course->shortname, 2);
+list($identifier, $shortname) = \local_exam_authorization\authorization::split_shortname($course->shortname);
 
 if (optional_param('export', false, PARAM_TEXT)) {
     $export_activities = optional_param_array('activities', array(), PARAM_TEXT);
@@ -86,8 +86,9 @@ if (optional_param('export', false, PARAM_TEXT)) {
     $table->data = $data;
     echo html_writer::table($table);
     echo html_writer::end_tag('DIV');
+    echo $OUTPUT->single_button($returnurl, get_string('back'));
 } else {
-    $moodle = \local_exam_authorization\authorization::moodle($identifier);
+    $moodle = \local_exam_authorization\authorization::get_moodle($identifier);
     echo $OUTPUT->heading(get_string('export_exam_title', 'block_exam_actions', $moodle->description), 3);
 
     if (empty($activities)) {

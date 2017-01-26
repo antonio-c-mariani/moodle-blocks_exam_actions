@@ -74,7 +74,7 @@ if ($editform->is_cancelled()) {
 
     $access_key = block_exam_actions_generate_access_key($data->courseid, $USER->id, $data->access_key_timeout, $data->verify_client_host);
     if ($local_shortname = $DB->get_field('course', 'shortname', array('id'=>$data->courseid))) {
-        list($identifier, $shortname) = explode('_', $local_shortname, 2);
+        list($identifier, $shortname) = \local_exam_authorization\authorization::split_shortname($local_shortname);
 
         if (abs(time() - $last_time) / 60 > 60)  { // more than 60 minutes from the last key generation
             block_exam_actions_enrol_students($identifier, $shortname, $course);

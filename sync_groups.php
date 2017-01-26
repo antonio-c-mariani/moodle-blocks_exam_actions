@@ -44,7 +44,7 @@ $synchronize = optional_param('synchronize', false, PARAM_TEXT);
 $groupingids = optional_param_array('groupingids', array(), PARAM_INT);
 $groupids = optional_param_array('groupids', array(), PARAM_INT);
 
-list($identifier, $shortname) = explode('_', $course->shortname, 2);
+list($identifier, $shortname) = \local_exam_authorization\authorization::split_shortname($course->shortname);
 $remote_courses = block_exam_actions_remote_courses();
 if (!isset($remote_courses[$identifier][$shortname])) {
     print_error('no_remote_course_found', 'block_exam_actions');

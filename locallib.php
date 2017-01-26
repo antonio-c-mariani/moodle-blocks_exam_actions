@@ -94,7 +94,7 @@ function block_exam_actions_remote_courses() {
     global $SESSION, $USER;
 
     if (!isset($SESSION->exam->user_courses)) {
-        $SESSION->exam->user_courses = \local_exam_authorization\authorization::user_courses($USER->username);
+        $SESSION->exam->user_courses = \local_exam_authorization\authorization::get_user_courses($USER->username);
     }
 
     return $SESSION->exam->user_courses;
@@ -103,7 +103,7 @@ function block_exam_actions_remote_courses() {
 function block_exam_actions_add_course($identifier, $remote_course) {
     global $DB;
 
-    $moodle = \local_exam_authorization\authorization::moodle($identifier);
+    $moodle = \local_exam_authorization\authorization::get_moodle($identifier);
     if (!$parent = $DB->get_field('course_categories', 'id', array('idnumber' => $identifier))) {
         $new_cat = new StdClass();
         $new_cat->name = $moodle->description;
@@ -147,17 +147,17 @@ function block_exam_actions_add_course($identifier, $remote_course) {
 
 // return a local user
 
-function block_exam_actions_add_or_update_remote_user($r_user, $customfields=array()) {
+function block_exam_actions_add_or_update_remote_user($remoteuser, $customfields=array()) {
     global $CFG, $DB;
 
-    $userfields = array('username', 'firstname', 'lastname', 'email');
+    $userfields = array('username', 'firstname', 'lastname', 'email', 'city', 'country', 'lang', 'timezone');
     $userfields_str = 'id, auth, ' . implode(', ', $userfields);
 
-    if ($user = $DB->get_record('user', array('username' => $r_user->username), $userfields_str)) {
+    if ($user = $DB->get_record('user', array('username' => $remoteuser->username), $userfields_str)) {
         $update = false;
         foreach ($userfields AS $field) {
-            if ( $user->$field != $r_user->$field) {
-                $user->$field = $r_user->$field;
+            if ( $user->$field != $remoteuser->$field) {
+                $user->$field = $remoteuser->$field;
                 $update = true;
             }
         }
@@ -170,10 +170,10 @@ function block_exam_actions_add_or_update_remote_user($r_user, $customfields=arr
         $user->mnethostid  = $CFG->mnet_localhost_id;
         $user->lang        = $CFG->lang;
         foreach ($userfields AS $field) {
-            $user->$field = $r_user->$field;
+            $user->$field = $remoteuser->$field;
         }
 
-        $default_auth_plugin = \local_exam_authorization\authorization::config('auth_plugin');
+        $default_auth_plugin = \local_exam_authorization\authorization::get_config('auth_plugin');
         $user->auth = empty($default_auth_plugin) ? 'manual' : $default_auth_plugin;
         $user->id = user_create_user($user, false);
     }
@@ -181,9 +181,9 @@ function block_exam_actions_add_or_update_remote_user($r_user, $customfields=arr
     if (!empty($customfields)) {
         $update = false;
         foreach ($customfields AS $f => $fid) {
-            if (isset($r_user->$f)) {
+            if (isset($remoteuser->$f)) {
                 $field = 'profile_field_' . $f;
-                $user->$field = $r_user->$f;
+                $user->$field = $remoteuser->$f;
                 $update = true;
             }
         }
@@ -192,7 +192,7 @@ function block_exam_actions_add_or_update_remote_user($r_user, $customfields=arr
         }
     }
 
-    $user->remote_id = $r_user->remote_id;
+    $user->remote_id = $remoteuser->remote_id;
     return $user;
 }
 
@@ -212,11 +212,9 @@ function block_exam_actions_enrol_students($identifier, $shortname, $course) {
     }
     $roleid = $DB->get_field('role', 'id', array('shortname' => 'student'), MUST_EXIST);
 
-    $userfields = array('username', 'firstname', 'lastname', 'email');
-    $userfields_str = 'id, auth, ' . implode(', ', $userfields);
     $customfields = $DB->get_records_menu('user_info_field', null, 'shortname', 'shortname, id');
 
-    $r_students = block_exam_actions_remote_students($identifier, $shortname, $userfields, array_keys($customfields));
+    $r_students = \local_exam_authorization\authorization::get_students($shortname, $identifier, array_keys($customfields));
     $sql = "SELECT ue.userid, MAX(ue.status) AS status
               FROM {enrol} e
               JOIN {user_enrolments} ue ON (ue.enrolid = e.id)
@@ -267,7 +265,7 @@ function block_exam_actions_enrol_students($identifier, $shortname, $course) {
 }
 
 function block_exam_actions_show_category_tree() {
-    $moodles = \local_exam_authorization\authorization::moodles();
+    $moodles = \local_exam_authorization\authorization::get_moodles();
     $tree = block_exam_actions_mount_category_tree();
 
     $text = html_writer::start_tag('form', array('method' => 'post', 'action' => 'release_courses.php'));
@@ -337,7 +335,7 @@ function block_exam_actions_show_categories($identifier, $categories) {
 
 function block_exam_actions_mount_category_tree() {
     $remote_courses = block_exam_actions_remote_courses();
-    $moodles = \local_exam_authorization\authorization::moodles();
+    $moodles = \local_exam_authorization\authorization::get_moodles();
 
     $tree = array();
     foreach ($remote_courses AS $identifier => $rcs) {
@@ -377,28 +375,6 @@ function block_exam_actions_mount_category_tree() {
 }
 
 
-function block_exam_actions_remote_students($identifier, $course_shortname, $userfields=array(), $customfields=array()) {
-    if (empty($userfields)) {
-        $userfields = array('username');
-    }
-
-    $function = 'local_exam_remote_get_students';
-    $params = array('shortname' => $course_shortname);
-    $params['userfields'] = array_merge($userfields, $customfields);
-
-    $r_students = array();
-    foreach (\local_exam_authorization\authorization::call_remote_function($identifier, $function, $params) as $st) {
-        $r_student = new stdClass();
-        $r_student->remote_id = $st->id;
-        foreach ($st->userfields AS $obj) {
-            $field = $obj->field;
-            $r_student->$field = $obj->value;
-        }
-        $r_students[$r_student->remote_id] = $r_student;
-    }
-    return $r_students;
-}
-
 function block_exam_actions_remote_categories($identifier, $categoryids) {
     $function = 'local_exam_remote_get_categories';
     $params = array('categoryids' => $categoryids);
@@ -429,7 +405,7 @@ function block_exam_actions_generate_access_key($courseid, $userid, $access_key_
     $acc->access_key = $key;
     $acc->userid     = $userid;
     $acc->courseid   = $courseid;
-    $acc->ip         = \local_exam_authorization\authorization::remote_addr();
+    $acc->ip         = \local_exam_authorization\authorization::get_remote_addr();
     $acc->timeout    = $access_key_timeout;
     $acc->verify_client_host = $verify_client_host;
     $acc->timecreated= time();
@@ -470,8 +446,9 @@ function block_exam_actions_sync_groupings_groups_and_members($identifier, $shor
 
     // Create new groupings
 
-    $r_groupings = \local_exam_authorization\authorization::call_remote_function($identifier,
-                        'core_group_get_course_groupings', array('courseid'=>$remote_courseid));
+    $function = 'core_group_get_course_groupings';
+    $params = array('courseid'=>$remote_courseid);
+    $r_groupings = \local_exam_authorization\authorization::call_remote_function($identifier, $function, $params);
     $remote_groupings = array();
     foreach ($r_groupings AS $r_grouping) {
         $r_grouping->localid = groups_get_grouping_by_name($course->id, $r_grouping->name);
@@ -486,8 +463,9 @@ function block_exam_actions_sync_groupings_groups_and_members($identifier, $shor
 
     // Create new groups
 
-    $r_groups = \local_exam_authorization\authorization::call_remote_function($identifier,
-                        'core_group_get_course_groups', array('courseid'=>$remote_courseid));
+    $function = 'core_group_get_course_groups';
+    $params = array('courseid'=>$remote_courseid);
+    $r_groups = \local_exam_authorization\authorization::call_remote_function($identifier, $function, $params);
     $remote_groups = array();
     foreach ($r_groups AS $r_group) {
         $r_group->localid = groups_get_group_by_name($course->id, $r_group->name);
@@ -505,9 +483,9 @@ function block_exam_actions_sync_groupings_groups_and_members($identifier, $shor
     if (empty($remote_groupings)) {
         $remote_groupings_groups = array();
     } else {
+        $function = 'core_group_get_groupings';
         $params = array('returngroups'=>1, 'groupingids'=>array_keys($remote_groupings));
-        $remote_groupings_groups = \local_exam_authorization\authorization::call_remote_function(
-                        $identifier, 'core_group_get_groupings', $params);
+        $remote_groupings_groups = \local_exam_authorization\authorization::call_remote_function($identifier, $function, $params);
         if ($synchronize && !empty($remote_groupings)) {
             foreach ($remote_groupings_groups AS $r_grouping) {
                 if ($remote_groupings[$r_grouping->id]->localid) {
@@ -531,8 +509,9 @@ function block_exam_actions_sync_groupings_groups_and_members($identifier, $shor
             $r_usernames[$st->remote_id] = $st->username;
         }
 
-        $r_groups_members = \local_exam_authorization\authorization::call_remote_function($identifier,
-                        'core_group_get_group_members', array('groupids'=>array_keys($remote_groups)));
+        $function = 'core_group_get_groupings';
+        $params = array('groupids' => array_keys($remote_groups));
+        $r_groups_members = \local_exam_authorization\authorization::call_remote_function($identifier, $function, $params);
         foreach ($r_groups_members AS $r_group_members) {
             if ($remote_groups[$r_group_members->groupid]->localid) {
                 $groupid = $remote_groups[$r_group_members->groupid]->localid;

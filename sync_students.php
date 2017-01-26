@@ -37,7 +37,7 @@ require_capability('local/exam_authorization:supervise_exam', $context);
 
 echo $OUTPUT->header();
 
-list($identifier, $shortname) = explode('_', $course->shortname, 2);
+list($identifier, $shortname) = \local_exam_authorization\authorization::split_shortname($course->shortname);
 $students = block_exam_actions_enrol_students($identifier, $shortname, $course);
 $customfields = $DB->get_records_menu('user_info_field', null, 'shortname', 'shortname, name');
 

@@ -509,7 +509,7 @@ function block_exam_actions_sync_groupings_groups_and_members($identifier, $shor
             $r_usernames[$st->remote_id] = $st->username;
         }
 
-        $function = 'core_group_get_groupings';
+        $function = 'core_group_get_group_members';
         $params = array('groupids' => array_keys($remote_groups));
         $r_groups_members = \local_exam_authorization\authorization::call_remote_function($identifier, $function, $params);
         foreach ($r_groups_members AS $r_group_members) {

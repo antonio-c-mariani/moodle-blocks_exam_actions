@@ -117,7 +117,7 @@ $string['access_key_timeout_help'] = 'Após este tempo a chave de acesso perde s
 $string['access_key_unknown'] = 'Chave de acesso desconhecida';
 $string['access_key_timedout'] = 'Chave de acesso com validade expirada';
 
-$string['header_version'] = 'Versão do CD';
+$string['header_version'] = 'Versão da ISO';
 $string['header_ip'] = 'Endereço IP local';
 $string['header_network'] = 'Endereço de Rede local';
 $string['real_ipaddress'] = 'Endereço IP real';
@@ -130,8 +130,8 @@ $string['empty_course'] = 'É necessário selecionar o curso para o qual a chave
 $string['empty_backup_file'] = 'Falha na geração do backup da atividade: arquivo vazio';
 $string['activity_exported'] = 'Atividade foi transposta';
 
-$string['cd_needed'] = 'É necessário utilizar o CD (ou pendrive) de provas para que este computador possa ser liberado para realizar uma prova.';
-$string['invalid_cd_version'] = 'A versão do CD (ou pendrive) de provas é inválida ou muito antiga.';
+$string['cd_needed'] = 'É necessário utilizar a ISO Provas para que este computador possa ser liberado para realizar uma prova.';
+$string['invalid_cd_version'] = 'A versão da ISO Provas é inválida ou muito antiga.';
 $string['out_of_student_ip_ranges'] = 'Este computador não pode ser utilizado para realizar uma prova pois seu número IP está fora da faixa de IPs permitidos.';
 
 $string['no_student_access_data'] = 'Não há dados de acessos de estudantes a serem apresentados';

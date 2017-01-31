@@ -38,7 +38,14 @@ require_capability('local/exam_authorization:supervise_exam', $context);
 echo $OUTPUT->header();
 
 list($identifier, $shortname) = \local_exam_authorization\authorization::split_shortname($course->shortname);
-$students = block_exam_actions_enrol_students($identifier, $shortname, $course);
+try {
+    $students = block_exam_actions_enrol_students($identifier, $shortname, $course);
+    block_exam_actions_message(get_string('students_synced', 'block_exam_actions'), 'success');
+} catch (Exception $e) {
+    $students = array();
+    block_exam_actions_message($e->getMessage(), 'error');
+}
+
 $customfields = $DB->get_records_menu('user_info_field', null, 'shortname', 'shortname, name');
 
 $data = array();
@@ -71,6 +78,7 @@ foreach ($customfields AS $f=>$name) {
 $table->data = $data;
 
 echo $OUTPUT->heading(get_string('sync_students_title', 'block_exam_actions'), 3);
+block_exam_actions_print_messages();
 
 echo html_writer::start_tag('DIV', array('class'=>'exam_box'));
 echo html_writer::table($table);

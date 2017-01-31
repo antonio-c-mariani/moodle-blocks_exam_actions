@@ -40,10 +40,12 @@ $string['exam_actions:monitor_exam'] = 'Visualizar relatórios de acompanhamento
 $string['title'] = 'Ações sobre provas';
 $string['no_permission'] = 'Você não tem permissão para realizar esta operação.';
 $string['no_remote_course_found'] = 'Não foi localizado curso equivamente a: \'{$a->shortname}\' em: \'{$a->moodle}\'';
+$string['local_course'] = 'Curso local; não sujeito a provas';
 
 $string['groupings'] = 'Agrupamentos remotos e respectivos grupos:';
 $string['groups'] = 'Grupos remotos não pertencentes a agrupamentos:';
 $string['not_mapped_groups'] = 'Grupos locais sem correspondência no curso remoto:';
+$string['groups_synced'] = 'Os grupos e seus membros foram sincronizados';
 
 $string['review_permissions'] = 'Revisar minhas permissões';
 $string['reviewed_permissions'] = 'Suas permissões foram revistas.';
@@ -59,6 +61,7 @@ $string['access_key'] = 'Chave de acesso';
 $string['new_access_key'] = 'Gerar nova chave de acesso';
 $string['generate_access_key'] = 'Gerar chave de acesso';
 $string['generated_access_keys'] = 'Chaves de acesso geradas';
+$string['generated_access_key'] = 'Gerada chave de acesso';
 $string['used_access_keys'] = 'Uso das chaves de acesso';
 $string['student_access'] = 'Acessos dos estudantes';
 $string['release_computer'] = 'Liberar computador';
@@ -68,7 +71,8 @@ $string['monitor_exam_title'] = 'Monitoramento de prova';
 $string['anavaliable_course'] = 'Não é permitido gerar chaves de acesso para curso ocultos ou cuja data de início esteja no futuro.';
 
 $string['sync_students'] = 'Sincronizar inscrições de estudantes';
-$string['sync_students_title'] = 'Sincronização completada. Situação atual dos estudantes';
+$string['sync_students_title'] = 'Situação atual dos estudantes';
+$string['students_synced'] = 'A sincronização dos estudantes foi completada';
 $string['sync_groups'] = 'Sincronizar grupos e membros';
 $string['sync_groups_help'] = 'Os grupos e agrupamentos do Moodle remoto podem ser sincronizados no Moodle Provas, incluindo seus membros.
     Marque abaixo os grupos e agrupamentos que você deseja sincronizar. Observe, contudo, que o os grupos e os grupamentos existem de forma independente no Moodle.
@@ -89,6 +93,7 @@ $string['no_remote_courses'] = 'Não foram localizados cursos remotos';
 $string['no_remote_course'] = 'Não foi localizado curso remoto';
 $string['no_course'] = 'Não foi localizado curso local: \'{$a}\'';
 $string['confirm_release_courses'] = 'Você realmente deseja disponibilizar os cursos selecionados no Moodle Provas?';
+$string['released_courses'] = 'Os cursos selecionados estão agora disponíveis no Moodle Provas.';
 
 $string['no_activities_to_export'] = 'Não há atividades a serem transpostas';
 $string['no_selected_activities'] = 'Não foi selecionada nenhuma atividade a ser transposta para o Moodle remoto';

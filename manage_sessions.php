@@ -51,7 +51,8 @@ if (($delete || $confirmdelete) && confirm_sesskey()) {
         } else {
             if ($confirmdelete) {
                 \core\session\manager::kill_session($session->sid);
-                redirect($baseurl, get_string('deleted_session', 'block_exam_actions'), 5);
+                block_exam_actions_message(get_string('deleted_session', 'block_exam_actions'), 'success');
+                redirect($baseurl);
             } else {
                 echo $OUTPUT->header();
                 echo $OUTPUT->heading(get_string('manage_sessions_title', 'block_exam_actions'));
@@ -71,6 +72,7 @@ if (($delete || $confirmdelete) && confirm_sesskey()) {
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('manage_sessions_title', 'block_exam_actions'));
+block_exam_actions_print_messages();
 
 $data = array();
 $current = session_id();

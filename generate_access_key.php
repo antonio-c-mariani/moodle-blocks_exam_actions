@@ -83,6 +83,8 @@ if ($editform->is_cancelled()) {
         // generate and show access key
         echo $OUTPUT->header();
         echo $OUTPUT->heading(get_string('access_key', 'block_exam_actions'), 3);
+        block_exam_actions_message(get_string('generated_access_key', 'block_exam_actions'), 'success');
+        block_exam_actions_print_messages();
 
         $tdata = array();
         $tdata[] = array(get_string('course'), $courses[$data->courseid]);
@@ -113,7 +115,8 @@ if ($editform->is_cancelled()) {
     echo "<br/>";
 
     if (empty($courses)) {
-        echo $OUTPUT->heading(get_string('no_course_to_generate_key', 'block_exam_actions'), 4);
+        block_exam_actions_message(get_string('no_course_to_generate_key', 'block_exam_actions'), 'warning');
+        block_exam_actions_print_messages();
         echo $OUTPUT->single_button($returnurl, get_string('back'));
     } else {
         echo $OUTPUT->box_start('generalbox boxalignleft boxwidthwide exam_box');

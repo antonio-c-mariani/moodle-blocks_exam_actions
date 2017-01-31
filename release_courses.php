@@ -49,13 +49,12 @@ $confirm = optional_param('confirmadd', false, PARAM_BOOL);
 if ($confirm && confirm_sesskey()) {
     $shortnames = optional_param_array('shortnames', array(), PARAM_TEXT);
     if (empty($shortnames)) {
-        print_error('no_selected_courses', 'block_exam_actions', $baseurl);
+        block_exam_actions_message(get_string('no_selected_courses', 'block_exam_actions'), 'error');
     } else {
         $moodles = \local_exam_authorization\authorization::get_moodles();
         $remote_courses = block_exam_actions_remote_courses();
-        foreach ($shortnames as $encodedshortname => $encodedidentifier) {
-            $shortname = urldecode($encodedshortname);
-            $identifier = urldecode($encodedidentifier);
+        foreach ($shortnames as $cid => $encodedshortname) {
+            list($identifier, $shortname) = \local_exam_authorization\authorization::split_shortname(base64_decode($encodedshortname));
             if (isset($remote_courses[$identifier][$shortname])) {
                 $remote_course = $remote_courses[$identifier][$shortname];
                 if (in_array('local/exam_remote:write_exam', $remote_course->capabilities)) {
@@ -74,10 +73,11 @@ if ($confirm && confirm_sesskey()) {
         if (count($shortnames) == 1) {
             redirect(new moodle_url('/course/view.php', array('id'=>$new_course->id)));
         } else {
+            block_exam_actions_message(get_string('released_courses', 'block_exam_actions'), 'success');
             redirect($baseurl);
         }
+        exit;
     }
-    exit;
 }
 
 echo $OUTPUT->header();
@@ -86,7 +86,7 @@ $add = optional_param('add', false, PARAM_BOOL);
 if ($add) {
     $shortnames = optional_param_array('shortnames', array(), PARAM_TEXT);
     if (empty($shortnames)) {
-        print_error('no_selected_courses', 'block_exam_actions', $baseurl);
+        block_exam_actions_message(get_string('no_selected_courses', 'block_exam_actions'), 'error');
     } else {
         echo $OUTPUT->heading(get_string('release_courses', 'block_exam_actions'), 3);
 
@@ -95,12 +95,11 @@ if ($add) {
 
         $text = html_writer::start_tag('form', array('method' => 'post', 'action' => 'release_courses.php'));
         $text .= html_writer::start_tag('ul');
-        foreach ($shortnames as $encodedshortname => $encodedidentifier) {
-            $shortname = urldecode($encodedshortname);
-            $identifier = urldecode($encodedidentifier);
+        foreach ($shortnames as $cid => $encodedshortname) {
+            list($identifier, $shortname) = \local_exam_authorization\authorization::split_shortname(base64_decode($encodedshortname));
             $orig = $moodles[$identifier]->description;
             $fullname = $remote_courses[$identifier][$shortname]->fullname;
-            $check = html_writer::checkbox("shortnames[{$encodedshortname}]", $encodedidentifier, true, "{$fullname} ({$orig})");
+            $check = html_writer::checkbox("shortnames[{$cid}]", $encodedshortname, true, "{$fullname} ({$orig})");
             $text .= html_writer::tag('li', $check);
         }
         $text .= html_writer::end_tag('ul');
@@ -115,12 +114,13 @@ if ($add) {
         $text .= html_writer::start_tag('form');
 
         echo $OUTPUT->box($text, 'generalbox boxalignleft boxwidthwide exam_box');
+        echo $OUTPUT->footer();
+        exit;
     }
-    echo $OUTPUT->footer();
-    exit;
 }
 
 echo $OUTPUT->heading(get_string('remote_courses', 'block_exam_actions'), 3);
+block_exam_actions_print_messages();
 echo get_string('remote_courses_msg', 'block_exam_actions');
 $text = block_exam_actions_show_category_tree($USER->username);
 echo $OUTPUT->box($text, 'generalbox boxalignleft boxwidthwide exam_box release_courses');

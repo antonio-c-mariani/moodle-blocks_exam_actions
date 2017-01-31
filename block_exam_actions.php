@@ -77,6 +77,12 @@ class block_exam_actions extends block_base {
             if ($PAGE->course->id == 1) {
                 $links[1] = html_writer::link(new moodle_url('/blocks/exam_actions/release_computer.php'), get_string('release_this_computer', 'block_exam_actions'));
             } else {
+                list($identifier, $shortname) = \local_exam_authorization\authorization::split_shortname($PAGE->course->shortname, false);
+                if (empty($identifier)) {
+                    $this->content->text = html_writer::tag('B', get_string('local_course', 'block_exam_actions'));
+                    return $this->content;
+                }
+
                 if (has_capability('moodle/backup:backupactivity', $PAGE->context)) {
                     $links[5] = html_writer::link(new moodle_url('/blocks/exam_actions/export_exam.php', array('courseid'=>$PAGE->context->instanceid)),
                                                  get_string('export_exam', 'block_exam_actions'));

@@ -90,14 +90,38 @@ function block_exam_actions_set_user_page_header() {
     return array($baseurl, $myurl, $context);
 }
 
-function block_exam_actions_remote_courses() {
-    global $SESSION, $USER;
+function block_exam_actions_print_messages() {
+    global $SESSION, $OUTPUT;
 
-    if (!isset($SESSION->exam->user_courses)) {
-        $SESSION->exam->user_courses = \local_exam_authorization\authorization::get_user_courses($USER->username);
+    if (isset($SESSION->exam->messages)) {
+        foreach ($SESSION->exam->messages as $type => $messages) {
+            foreach ($messages as $msg) {
+                echo $OUTPUT->notification($msg, $type);
+            }
+        }
+    }
+    $SESSION->exam->messages = array();
+}
+
+function block_exam_actions_message($msg, $type='info') {
+    global $SESSION;
+
+    if (isset($SESSION->exam->messages)) {
+        $SESSION->exam->messages = array();
     }
 
-    return $SESSION->exam->user_courses;
+    $types = array('success', 'info', 'warning', 'error');
+    if (!in_array($type, $types)) {
+        $type = 'error';
+    }
+
+    $SESSION->exam->messages[$type][] = $msg;
+}
+
+function block_exam_actions_remote_courses($forcereload=false) {
+    global $USER;
+
+    return \local_exam_authorization\authorization::get_user_courses($USER->username, true, '', $forcereload);
 }
 
 function block_exam_actions_add_course($identifier, $remote_course) {
@@ -307,14 +331,13 @@ function block_exam_actions_show_categories($identifier, $categories) {
         $text .= html_writer::start_tag('OL');
         if (!empty($cat->courses)) {
             foreach ($cat->courses AS $c) {
-                $local_shortname = "{$identifier}_{$c->shortname}";
-                $encodedshortname = urlencode($c->shortname);
-                $encodedidentifier = urlencode($identifier);
-                if ($id = $DB->get_field('course', 'id', array('shortname'=>$local_shortname))) {
-                    $check = html_writer::checkbox("shortnames[{$encodedshortname}]", $encodedidentifier, true, '', array('disabled'=>'disabled'));
+                $localshortname = "{$identifier}_{$c->shortname}";
+                $encodedshortname = base64_encode($localshortname);
+                if ($id = $DB->get_field('course', 'id', array('shortname'=>$localshortname))) {
+                    $check = html_writer::checkbox("shortnames[$c->id]", $encodedshortname, true, '', array('disabled'=>'disabled'));
                     $fullname = html_writer::link(new moodle_url('/course/view.php', array('id' => $id)), $c->fullname);
                 } else {
-                    $check = html_writer::checkbox("shortnames[{$encodedshortname}]", $encodedidentifier, false);
+                    $check = html_writer::checkbox("shortnames[{$c->id}]", $encodedshortname, false);
                     $fullname = '&nbsp;' . $c->fullname;
                     $has_course = true;
                 }

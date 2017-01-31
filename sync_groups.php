@@ -54,10 +54,14 @@ $remote_courseid = $remote_courses[$identifier][$shortname]->id;
 list($remote_groupings, $remote_groups, $remote_groupings_groups) =
     block_exam_actions_sync_groupings_groups_and_members($identifier, $shortname,
             $course, $remote_courseid, $synchronize, $groupingids, $groupids);
+if ($synchronize) {
+    block_exam_actions_message(get_string('groups_synced', 'block_exam_actions'), 'success');
+}
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('sync_groups_title', 'block_exam_actions') .
             $OUTPUT->help_icon('sync_groups', 'block_exam_actions'), 3);
+block_exam_actions_print_messages();
 
 $has_group = false;
 $grouped = array();
